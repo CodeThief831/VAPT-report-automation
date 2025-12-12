@@ -1,0 +1,88 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+*.egg
+.env
+.env.*
+.venv/
+venv/
+venv.bak/
+.env.local
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+coverage/
+.coverage
+coverage.xml
+htmlcov/
+*.sqlite3
+*.db
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnp.*
+.pnpm-debug.log*
+/build
+/dist
+/public/build
+frontend/build/
+frontend/dist/
+
+# Frontend cache / CRA
+.cache/
+.next/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# System
+.DS_Store
+Thumbs.db
+
+# Generated / temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Generated reports and evidence (do not commit large generated files)
+backend/generated_reports/
+backend/evidence_storage/
+backend/report-test-run-*.html
+
+# Build artifacts
+dist/
+build/
+
+# Other
+coverage/
+reports/
+
+# Ensure frontend local environment files are ignored
+frontend/.env
+
+# Ignore VS Code settings sync cache
+.settings/
+
+# OS files
+Icon
+
+# End of .gitignore
