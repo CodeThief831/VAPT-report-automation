@@ -1,39 +1,54 @@
-# VAPT Report Automation System (VRAS) - GUI Edition
+# VAPT Report Automation
 
-This project is a web-based GUI tool to help security teams manage VAPT reports. It allows importing scanner outputs, editing findings, adding evidence, and generating reports.
+Lightweight VAPT report automation system (FastAPI backend + React frontend).
 
-## Project Structure
+This workspace is maintained as a Windows-first project. Docker artifacts were removed — run locally on Windows.
 
-- `backend/`: A FastAPI application that provides the API for the system.
-- `frontend/`: A React application that provides the web-based GUI.
-- `docker-compose.yml`: Orchestrates the backend, frontend, and a MinIO service for storage.
+Quick Start (Windows)
 
-## Getting Started
+1. Prepare Python virtual environment
 
-### Prerequisites
+```powershell
+cd "C:\Users\royal\OneDrive\Desktop\Report Automation\backend"
+python -m venv .venv
+& .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-- Docker
-- Docker Compose
+2. Run backend (development)
 
-### Running the Application
+```powershell
+# from backend folder (virtualenv active)
+uvicorn app.main:app --reload
+```
 
-1.  **Clone the repository** (or in this case, make sure you have the files in the correct structure).
+3. Frontend (Node.js required)
 
-2.  **Build and run the services using Docker Compose:**
+```powershell
+cd "C:\Users\royal\OneDrive\Desktop\Report Automation\frontend"
+# install deps if needed
+npm install
+# dev server
+npm run start
+# or build for production
+npm run build
+```
 
-    ```bash
-    docker-compose up --build
-    ```
+4. Populate sample findings (optional)
 
-3.  **Access the applications:**
-    -   **Frontend (GUI):** [http://localhost:3000](http://localhost:3000)
-    -   **Backend (API):** [http://localhost:8000/docs](http://localhost:8000/docs) for the OpenAPI documentation.
-    -   **MinIO (Storage):** [http://localhost:9001](http://localhost:9001) with user `minioadmin` and password `minioadmin`.
+```powershell
+# from backend folder
+python auto_fill_findings.py
+```
 
-## Usage
+Notes
+- This repo is intended for Windows development and testing.
+- Generated reports and evidence files are stored under `backend/generated_reports/` and `backend/evidence_storage/` and are ignored by Git.
+- If you want to reintroduce Docker later, create Dockerfiles and `docker-compose.yml` and document the workflow.
 
-1.  Open the frontend in your browser.
-2.  Use the dashboard to get an overview of your projects and findings.
-3.  Upload scanner reports and manage findings.
-4.  Add steps to reproduce and evidence (screenshots, etc.).
-5.  Generate reports in PDF, HTML, or JSON format.
+Support
+- Development: `backend/` contains FastAPI app and `frontend/` contains React app.
+- Tests: `backend/tests/` includes a few pytest tests for guidance.
+
+License & Contribution
+- Add licensing and contribution guidelines as needed.
