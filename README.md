@@ -4,40 +4,61 @@ Lightweight VAPT report automation system (FastAPI backend + React frontend).
 
 This workspace is maintained as a Windows-first project. Docker artifacts were removed — run locally on Windows.
 
-Quick Start (Windows)
+Quick Start (Windows) — One Command
 
-1. Prepare Python virtual environment
+From the repo root, run:
 
 ```powershell
-cd "C:\Users\royal\OneDrive\Desktop\Report Automation\backend"
+.\run-all.ps1
+```
+
+This will:
+- Activate the Python virtualenv automatically
+- Start backend on `http://localhost:8000` (with API docs at `/docs`)
+- Start frontend on `http://localhost:3000`
+- Open both in separate PowerShell windows
+
+### Setup (first time)
+
+1. Install Python dependencies:
+
+```powershell
+cd backend
 python -m venv .venv
 & .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-2. Run backend (development)
+2. Install Node.js dependencies:
 
 ```powershell
-# from backend folder (virtualenv active)
-uvicorn app.main:app --reload
-```
-
-3. Frontend (Node.js required)
-
-```powershell
-cd "C:\Users\royal\OneDrive\Desktop\Report Automation\frontend"
-# install deps if needed
+cd frontend
 npm install
-# dev server
-npm run start
-# or build for production
-npm run build
 ```
 
-4. Populate sample findings (optional)
+3. Run the app:
 
 ```powershell
-# from backend folder
+# from repo root
+.\run-all.ps1
+```
+
+### Individual Commands (optional)
+
+If you prefer separate windows:
+
+```powershell
+# Backend only
+.\run-backend.ps1
+
+# Frontend only
+.\run-frontend.ps1
+```
+
+### Populate Sample Findings (optional)
+
+```powershell
+cd backend
 python auto_fill_findings.py
 ```
 

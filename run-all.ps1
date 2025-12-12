@@ -1,18 +1,59 @@
 # run-all.ps1
-# Starts backend and frontend in separate PowerShell jobs so both run from one command.
+# Single command to start backend AND frontend with automatic venv activation.
 # Usage: .\run-all.ps1
 
 $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# Start backend job
-$backendScript = Join-Path $repoRoot 'run-backend.ps1'
-$frontendScript = Join-Path $repoRoot 'run-frontend.ps1'
+# Find and activate virtualenv
+$venvActivates = @(
+    Join-Path $repoRoot '.venv\Scripts\Activate.ps1',
+    Join-Path $repoRoot 'backend\.venv\Scripts\Activate.ps1',
+    Join-Path $repoRoot 'backend\venv\Scripts\Activate.ps1'
+)
 
-Write-Host 'Starting backend as job...'
-Start-Job -Name VRA-Backend -ScriptBlock { param($s) & $s } -ArgumentList $backendScript | Out-Null
-Start-Sleep -Seconds 2
-Write-Host 'Starting frontend as job...'
-Start-Job -Name VRA-Frontend -ScriptBlock { param($s) & $s } -ArgumentList $frontendScript | Out-Null
+$activated = $false
+foreach ($act in $venvActivates) {
+    if (Test-Path $act) {
+        Write-Host "Activating virtualenv: $act" -ForegroundColor Green
+        & $act
+        $activated = $true
+        break
+    }
+}
 
-Write-Host 'Backend and Frontend started as background jobs.'
-Write-Host 'Use `Get-Job` and `Receive-Job -Name <name>` to inspect output, or open the dev servers in your browser.'
+if (-not $activated) {
+    Write-Host "Warning: no virtualenv found. Ensure Python environment is activated manually." -ForegroundColor Yellow
+}
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "Starting VAPT Report Automation" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+
+# Start backend in a new PowerShell window
+Write-Host "Starting backend (port 8000)..." -ForegroundColor Yellow
+$backendCmd = @"
+cd '$($repoRoot)\backend'
+uvicorn app.main:app --reload
+pause
+"@
+Start-Process powershell -ArgumentList "-NoExit", "-Command", $backendCmd -WindowStyle Normal
+
+Start-Sleep -Seconds 3
+
+# Start frontend in a new PowerShell window
+Write-Host "Starting frontend (port 3000)..." -ForegroundColor Yellow
+$frontendCmd = @"
+cd '$($repoRoot)\frontend'
+if (-not (Test-Path 'node_modules')) {
+    npm install
+}
+npm start
+pause
+"@
+Start-Process powershell -ArgumentList "-NoExit", "-Command", $frontendCmd -WindowStyle Normal
+
+Write-Host "========================================" -ForegroundColor Green
+Write-Host "✓ Backend running on http://localhost:8000" -ForegroundColor Green
+Write-Host "✓ Frontend running on http://localhost:3000" -ForegroundColor Green
+Write-Host "========================================" -ForegroundColor Green
+Write-Host "Press Ctrl+C in each window to stop." -ForegroundColor Cyan
