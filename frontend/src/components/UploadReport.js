@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { importRun, getFindings } from '../services/api';
+import { importRun } from '../services/api';
 
 export default function UploadReport({ runId = 'import-run', initialFindings = [], onImported }) {
   const [metadata, setMetadata] = useState(JSON.stringify(initialFindings, null, 2));

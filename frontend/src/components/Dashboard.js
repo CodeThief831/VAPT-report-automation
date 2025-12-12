@@ -3,38 +3,8 @@ import Findings from './Findings';
 import ReportGenerator from './ReportGenerator';
 import UploadReport from './UploadReport';
 
-    const mockFindings = [
-    {
-        id: "F-2025-001",
-        title: "Reflected XSS in /search",
-        owasp_category: "A7: Cross-Site Scripting (XSS)",
-        severity: "High",
-        status: "Verified",
-        description: "A reflected XSS vulnerability allows attackers to inject arbitrary client-side scripts.",
-        steps_to_reproduce: [
-            { step_number: 1, text: "Navigate to /search?q=<script>alert(1)</script>" },
-            { step_number: 2, text: "Observe the alert dialog." },
-        ],
-        evidence: [],
-    },
-    {
-        id: "F-2025-002",
-        title: "SQL Injection in /login",
-        owasp_category: "A1: Injection",
-        severity: "Critical",
-        status: "Unverified",
-        description: "A SQL injection vulnerability allows attackers to execute arbitrary SQL queries.",
-        steps_to_reproduce: [
-            { step_number: 1, text: "Enter ' OR 1=1 -- in the username field." },
-            { step_number: 2, text: "Enter a random password." },
-            { step_number: 3, text: "Click login and observe successful authentication." },
-        ],
-        evidence: [],
-    },
-];
-
 function Dashboard() {
-    const [findings, setFindings] = useState(mockFindings);
+    const [findings, setFindings] = useState([]);
 
     const handleStrChange = (e, id) => {
         // Support both textarea-style events and structured steps arrays
