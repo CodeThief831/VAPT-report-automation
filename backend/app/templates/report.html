@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAPT Report</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.7;
+            color: #1a1a1a;
+            margin: 0;
+            background: #ffffff;
+        }
+
+        .report-container {
+            max-width: 920px;
+            margin: 0 auto;
+        }
+
+        /* Cover Page Styling - Updated Colors */
+        .cover-page {
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
+            color: white;
+            page-break-after: always;
+            padding: 40px;
+        }
+
+        .cover-page h1 {
+            font-size: 3.8em;
+            margin: 0 0 20px 0;
+            font-weight: 700;
+            letter-spacing: -1.2px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .cover-page h2 {
+            font-size: 1.9em;
+            margin: 25px 0;
+            font-weight: 400;
+            opacity: 0.98;
+            letter-spacing: 0.5px;
+        }
+
+        .cover-page .divider {
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+            margin: 35px auto;
+        }
+        
+        .cover-page .meta {
+            margin-top: 90px;
+            font-size: 1.15em;
+            line-height: 2.2;
+        }
+
+        .cover-page .meta p {
+            margin: 12px 0;
+            letter-spacing: 0.3px;
+        }
+
+        .cover-page .report-type {
+            margin-top: 70px;
+            font-size: 1.3em;
+            font-style: italic;
+            opacity: 0.92;
+            font-weight: 300;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Headers and Footers */
+        header, footer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            padding: 16px 32px;
+            background: linear-gradient(90deg, #f8f9fa, #ffffff);
+            border: 1px solid #e3e3e3;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        header {
+            top: 0;
+            border-bottom: 2px solid #1565c0;
+        }
+
+        footer {
+            bottom: 0;
+            border-top: 2px solid #1565c0;
+            border-bottom: none;
+            text-align: right;
+        }
+
+        footer:after {
+            content: "Page " counter(page);
+        }
+
+        /* Section Styling */
+        .section {
+            padding: 45px 35px;
+            margin-top: 70px;
+        }
+
+        h2 {
+            color: #0d47a1;
+            font-size: 2.3em;
+            border-bottom: 4px solid #1976d2;
+            padding-bottom: 18px;
+            margin-bottom: 35px;
+            margin-top: 0;
+            letter-spacing: -0.3px;
+        }
+
+        h3 {
+            color: #1565c0;
+            font-size: 1.5em;
+            margin: 28px 0 18px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e3f2fd;
+            font-weight: 600;
+        }
+
+        h4 {
+            color: #1a1a1a;
+            font-size: 1.15em;
+            margin: 20px 0 12px 0;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            line-height: 1.8;
+        }
+
+        /* Executive Summary */
+        .executive-summary {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
+            border-left: 5px solid #1976d2;
+            border-radius: 4px;
+            padding: 28px;
+            margin: 35px 0;
+            border-radius: 4px;
+        }
+
+        /* Risk Summary Box */
+        .risk-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin: 35px 0;
+        }
+
+        .risk-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e3f2fd;
+            border-left: 5px solid #1976d2;
+            border-radius: 8px;
+            padding: 28px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(13, 71, 161, 0.08);
+            transition: transform 0.2s;
+        }
+
+        .risk-card .count {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 15px 0;
+            letter-spacing: -1px;
+        }
+
+        .risk-card.critical .count { color: #c62828; }
+        .risk-card.high .count { color: #f57c00; }
+        .risk-card.medium .count { color: #fbc02d; }
+        .risk-card.low .count { color: #2e7d32; }
+
+        .risk-card.critical { border-left-color: #c62828; border-color: #ffebee; }
+        .risk-card.high { border-left-color: #f57c00; border-color: #fff3e0; }
+        .risk-card.medium { border-left-color: #fbc02d; border-color: #fffde7; }
+        .risk-card.low { border-left-color: #2e7d32; border-color: #f1f8e9; }
+
+        .risk-card .label {
+            font-size: 0.95em;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Table of Contents */
+        .toc-section {
+            margin: 35px 0;
+        }
+
+        .toc-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc-section ul li {
+            margin: 10px 0;
+            padding-left: 25px;
+            line-height: 1.8;
+        }
+
+        .toc-section ul li:before {
+            content: "▸ ";
+            margin-left: -25px;
+            margin-right: 12px;
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .toc-section ul ul {
+            margin: 8px 0 12px 0;
+        }
+
+        .toc-section ul ul li {
+            padding-left: 40px;
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        /* Findings Styling */
+        .finding {
+            border: 2px solid #e0e0e0;
+            border-left: 6px solid #1976d2;
+            padding: 32px;
+            margin-bottom: 35px;
+            background: #fafbfc;
+            border-radius: 6px;
+            page-break-inside: avoid;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .finding h3 {
+            margin-top: 0;
+            margin-bottom: 18px;
+            color: #0d47a1;
+            font-size: 1.35em;
+            border-bottom: 2px solid #e3f2fd;
+            padding-bottom: 12px;
+        }
+
+        .finding.severity-critical {
+            border-left-color: #c62828;
+            background: #ffebee;
+            border-color: #ef5350;
+        }
+
+        .finding.severity-high {
+            border-left-color: #f57c00;
+            background: #fff3e0;
+            border-color: #ffb74d;
+        }
+
+        .finding.severity-medium {
+            border-left-color: #fbc02d;
+            background: #fffde7;
+            border-color: #fdd835;
+        }
+
+        .finding.severity-low {
+            border-left-color: #2e7d32;
+            background: #f1f8e9;
+            border-color: #81c784;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            margin: 12px 0;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .severity-badge.critical {
+            background: linear-gradient(135deg, #c62828, #d32f2f);
+        }
+
+        .severity-badge.high {
+            background: linear-gradient(135deg, #f57c00, #ff6f00);
+        }
+
+        .severity-badge.medium {
+            background: linear-gradient(135deg, #fbc02d, #fdd835);
+        }
+
+        .severity-badge.low {
+            background: linear-gradient(135deg, #2e7d32, #388e3c);
+        }
+
+        .finding-meta {
+            display: flex;
+            gap: 35px;
+            margin: 20px 0;
+            font-size: 0.95em;
+            flex-wrap: wrap;
+        }
+
+        .finding-meta strong {
+            color: #1565c0;
+            min-width: 110px;
+            font-weight: 700;
+        }
+
+        .str {
+            margin: 25px 0;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 20px;
+            border-radius: 6px;
+            border: 2px solid #e3f2fd;
+            border-left: 5px solid #1976d2;
+        }
+
+        .str h4 {
+            margin-top: 0;
+            color: #0d47a1;
+            margin-bottom: 15px;
+        }
+
+        .str ol {
+            padding-left: 25px;
+            margin: 12px 0;
+        }
+
+        .str ol li {
+            margin: 12px 0;
+            line-height: 1.8;
+            color: #1a1a1a;
+        }
+
+        /* Evidence Images */
+        .evidence-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 6px;
+            border: 1px solid #e3f2fd;
+        }
+
+        .evidence-image {
+            max-width: 600px;
+            max-height: 450px;
+            border: 2px solid #1976d2;
+            border-radius: 6px;
+            margin: 15px 0;
+            display: block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Appendix */
+        .appendix {
+            background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
+            padding: 45px 35px;
+            margin-top: 70px;
+            border-top: 4px solid #1976d2;
+        }
+
+        .appendix h3 {
+            margin-top: 35px;
+            color: #1565c0;
+        }
+
+        .evidence-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .evidence-list li {
+            margin: 22px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
+            border-left: 5px solid #1976d2;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .evidence-list strong {
+            color: #0d47a1;
+            font-weight: 700;
+        }
+
+        .evidence-list img {
+            max-width: 100%;
+            max-height: 350px;
+            margin: 15px 0;
+            border: 2px solid #1976d2;
+            border-radius: 6px;
+        }
+
+        .evidence-caption {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 10px;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Summary Tables */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .summary-table th {
+            background: linear-gradient(135deg, #0d47a1, #1565c0);
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .summary-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e3f2fd;
+            color: #1a1a1a;
+        }
+
+        .summary-table tr:hover {
+            background: #f1f6ff;
+        }
+
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Methodology Section */
+        .methodology-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .methodology-list li {
+            margin: 14px 0;
+            padding-left: 35px;
+            position: relative;
+            line-height: 1.8;
+            color: #1a1a1a;
+        }
+
+        .methodology-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: linear-gradient(135deg, #fff9c4, #fffde7);
+            border: 2px solid #fbc02d;
+            border-radius: 6px;
+            padding: 22px;
+            margin: 35px 0;
+            font-size: 0.95em;
+            color: #664d03;
+            line-height: 1.8;
+        }
+
+        .disclaimer strong {
+            color: #664d03;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <!-- Cover Page -->
+        <div class="cover-page">
+            <h1>VULNERABILITY ASSESSMENT &<br />PENETRATION TESTING REPORT</h1>
+            <div class="divider"></div>
+            <h2>Professional Security Assessment</h2>
+            <div class="report-type">Comprehensive Security Analysis & Findings</div>
+            <div class="meta">
+                <p><strong>Assessment ID:</strong> {{ run_id }}</p>
+                <p><strong>Date:</strong> December 12, 2025</p>
+                <p><strong>Report Classification:</strong> Confidential</p>
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Headers/Footers for subsequent pages -->
+        <header>
+            VAPT Report | Assessment ID: {{ run_id }} | Confidential
+        </header>
+
+        <footer></footer>
+
+        <main>
+            <!-- Table of Contents -->
+            <div class="section">
+                <h2>Table of Contents</h2>
+                <div class="toc-section">
+                    <ul>
+                        <li>Executive Summary</li>
+                        <li>Risk Assessment Overview</li>
+                        <li>Testing Methodology</li>
+                        <li>Detailed Findings
+                            <ul>
+                                {% for finding in findings %}
+                                <li>{{ finding.title }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        <li>OWASP Categories Summary</li>
+                        <li>Recommendations & Remediation</li>
+                        <li>Appendix: Evidence & Screenshots</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="page-break"></div>
+
+            <!-- Executive Summary -->
+            <div class="section">
+                <h2>Executive Summary</h2>
+                <div class="executive-summary">
+                    <p>This Vulnerability Assessment and Penetration Testing (VAPT) report documents the findings from a comprehensive security assessment conducted on the target systems. The assessment identified multiple security vulnerabilities across various severity levels that require immediate attention and remediation.</p>
+                    <p><strong>Overall Risk Level:</strong> Based on the vulnerabilities discovered, the overall security posture requires urgent attention to critical and high-severity findings.</p>
+                </div>
+
+                <h3>Risk Assessment Summary</h3>
+                <div class="risk-summary">
+                    {% set critical = 0 %}
+                    {% set high = 0 %}
+                    {% set medium = 0 %}
+                    {% set low = 0 %}
+                    {% for finding in findings %}
+                        {% if finding.severity == 'Critical' %}
+                            {% set critical = critical + 1 %}
+                        {% elif finding.severity == 'High' %}
+                            {% set high = high + 1 %}
+                        {% elif finding.severity == 'Medium' %}
+                            {% set medium = medium + 1 %}
+                        {% elif finding.severity == 'Low' %}
+                            {% set low = low + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    <div class="risk-card critical">
+                        <div class="label">Critical</div>
+                        <div class="count">{{ critical }}</div>
+                    </div>
+                    <div class="risk-card high">
+                        <div class="label">High</div>
+                        <div class="count">{{ high }}</div>
+                    </div>
+                    <div class="risk-card medium">
+                        <div class="label">Medium</div>
+                        <div class="count">{{ medium }}</div>
+                    </div>
+                    <div class="risk-card low">
+                        <div class="label">Low</div>
+                        <div class="count">{{ low }}</div>
+                    </div>
+                </div>
+
+                <h3>Total Vulnerabilities Found</h3>
+                <p><strong>Total Findings: {{ findings|length }}</strong></p>
+                <p>All identified vulnerabilities are detailed in the sections below along with remediation recommendations.</p>
+            </div>
+
+            <div class="page-break"></div>
+
+            <!-- Testing Methodology -->
+            <div class="section">
+                <h2>Testing Methodology</h2>
+                <p>The assessment was conducted using industry-standard methodologies and tools to identify security vulnerabilities. The following approach was employed:</p>
+                
+                <h3>Assessment Approach</h3>
+                <ul class="methodology-list">
+                    <li>Information Gathering & Reconnaissance</li>
+                    <li>Vulnerability Scanning & Analysis</li>
+                    <li>Manual Penetration Testing</li>
+                    <li>Authentication & Authorization Testing</li>
+                    <li>Business Logic Testing</li>
+                    <li>Configuration Review</li>
+                    <li>Data Protection Assessment</li>
+                </ul>
+
+                <h3>Tools & Frameworks Used</h3>
+                <ul class="methodology-list">
+                    <li>OWASP Testing Guide v4</li>
+                    <li>NIST Cybersecurity Framework</li>
+                    <li>Industry-standard Security Testing Tools</li>
+                    <li>Manual Code Review & Analysis</li>
+                </ul>
+            </div>
+
+            <div class="page-break"></div>
+
+            <!-- OWASP Categories Summary -->
+            <div class="section">
+                <h2>OWASP Categories Summary</h2>
+                <p>The following table summarizes the distribution of findings across OWASP vulnerability categories:</p>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>OWASP Category</th>
+                            <th>Count</th>
+                            <th>Severity Distribution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cat, count in owasp_counts.items() %}
+                        <tr>
+                            <td><strong>{{ cat }}</strong></td>
+                            <td>{{ count }}</td>
+                            <td>Multiple severity levels</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="page-break"></div>
+
+            <!-- Detailed Findings -->
+            <div class="section">
+                <h2>Detailed Findings</h2>
+                <p>The following section provides detailed information about each vulnerability discovered during the assessment, including description, impact, proof of concept, and remediation steps.</p>
+
+                {% set grouped = {} %}
+                {% for finding in findings %}
+                    {% set key = (finding.owasp_category or 'Uncategorized') %}
+                    {% if key not in grouped %}
+                        {% set _ = grouped.update({key: [finding]}) %}
+                    {% else %}
+                        {% set _ = grouped[key].append(finding) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% for category, items in grouped.items() %}
+                    <h3>{{ category }} — {{ items|length }} Finding{{ 's' if items|length > 1 else '' }}</h3>
+                    
+                    {% for finding in items %}
+                        <div class="finding severity-{{ finding.severity.lower() }}">
+                            <h3>{{ finding.title }}</h3>
+                            
+                            <div style="display: flex; gap: 20px; align-items: center; margin: 15px 0;">
+                                <span class="severity-badge {{ finding.severity.lower() }}">
+                                    {{ finding.severity|upper }}
+                                </span>
+                                {% if finding.cvss_v3 %}
+                                    <div><strong>CVSS v3.0 Score:</strong> {{ finding.cvss_v3 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="finding-meta">
+                                <div><strong>Severity:</strong> {{ finding.severity }}</div>
+                                {% if finding.cvss_v3 %}<div><strong>CVSS Score:</strong> {{ finding.cvss_v3 }}</div>{% endif %}
+                            </div>
+
+                            <h4>Description</h4>
+                            <p>{{ finding.description }}</p>
+
+                            {% if finding.steps_to_reproduce and finding.steps_to_reproduce|length > 0 %}
+                            <div class="str">
+                                <h4>Steps to Reproduce / Proof of Concept</h4>
+                                <ol>
+                                    {% if finding.steps_to_reproduce is string %}
+                                        {% for line in finding.steps_to_reproduce.splitlines() if line.strip() %}
+                                            <li>{{ line | e }}</li>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for step in finding.steps_to_reproduce %}
+                                            <li>
+                                                {{ step.text | e }}
+                                                {% if step.attached_evidence_ids and step.attached_evidence_ids|length > 0 %}
+                                                    <div class="evidence-container">
+                                                        {% for eid in step.attached_evidence_ids %}
+                                                            {% for e in finding.evidence %}
+                                                                {% if e.id == eid %}
+                                                                    <figure>
+                                                                        <img src="/api/evidence/{{ e.id }}/file" alt="{{ e.caption | e }}" class="evidence-image" />
+                                                                        {% if e.caption %}<figcaption class="evidence-caption">{{ e.caption | e }}</figcaption>{% endif %}
+                                                                    </figure>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    {% endif %}
+                                </ol>
+                            </div>
+                            {% endif %}
+
+                            <h4>Impact</h4>
+                            <p>This vulnerability poses a significant risk to the security and integrity of the system and should be remediated with high priority.</p>
+
+                            <h4>Remediation Recommendations</h4>
+                            <ul>
+                                <li>Implement proper input validation and output encoding</li>
+                                <li>Follow security best practices for {{ finding.owasp_category or 'this vulnerability type' }}</li>
+                                <li>Conduct code review and security testing after fixes are applied</li>
+                                <li>Implement Web Application Firewall (WAF) rules if applicable</li>
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+
+            <div class="page-break"></div>
+
+            <!-- Recommendations -->
+            <div class="section">
+                <h2>Recommendations & Remediation Strategy</h2>
+                
+                <h3>Immediate Actions (Critical Priority)</h3>
+                <p>The following critical vulnerabilities require immediate remediation:</p>
+                <ul class="methodology-list">
+                    <li>Address all Critical severity findings immediately</li>
+                    <li>Implement emergency patches and hotfixes</li>
+                    <li>Deploy temporary mitigations where permanent fixes are being developed</li>
+                </ul>
+
+                <h3>Short-term Actions (High Priority)</h3>
+                <ul class="methodology-list">
+                    <li>Remediate all High severity findings within 30 days</li>
+                    <li>Implement security awareness training for development team</li>
+                    <li>Establish secure development practices and code review processes</li>
+                </ul>
+
+                <h3>Long-term Actions</h3>
+                <ul class="methodology-list">
+                    <li>Address Medium and Low severity findings in regular sprints</li>
+                    <li>Implement automated security testing in the CI/CD pipeline</li>
+                    <li>Conduct regular security assessments and penetration tests</li>
+                    <li>Establish a vulnerability management program</li>
+                </ul>
+
+                <div class="disclaimer">
+                    <strong>Disclaimer:</strong> This report contains confidential information intended solely for the use of the authorized client. Unauthorized access, use, or distribution of this report is prohibited. All findings should be treated with appropriate confidentiality and security measures.
+                </div>
+            </div>
+
+            <div class="page-break"></div>
+
+            <!-- Appendix -->
+            <div class="appendix">
+                <h2>Appendix: Evidence & Screenshots</h2>
+                <p>This section contains all supporting evidence and screenshots referenced in the detailed findings above.</p>
+
+                {% for finding in findings %}
+                    {% if finding.evidence and finding.evidence|length > 0 %}
+                        <h3>{{ finding.title }}</h3>
+                        <ul class="evidence-list">
+                            {% for e in finding.evidence %}
+                                <li>
+                                    <strong>{{ e.filename | e }}</strong>
+                                    <div style="font-size: 0.85em; color: #888; margin: 5px 0;">
+                                        Uploaded by {{ e.uploader | e }} on {{ e.timestamp | e }}
+                                    </div>
+                                    <img src="/api/evidence/{{ e.id }}" alt="{{ e.caption | e }}" />
+                                    {% if e.caption %}
+                                        <div class="evidence-caption">{{ e.caption | e }}</div>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Report Footer -->
+            <div class="page-break"></div>
+            <div class="section" style="text-align: center; padding: 60px 30px;">
+                <h3 style="border: none;">End of Report</h3>
+                <p style="margin: 20px 0; color: #888;">
+                    <strong>Assessment ID:</strong> {{ run_id }}<br />
+                    <strong>Report Date:</strong> December 12, 2025<br />
+                    <strong>Classification:</strong> Confidential
+                </p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

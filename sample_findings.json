@@ -1,0 +1,342 @@
+[
+  {
+    "id": "F-2025-001",
+    "title": "SQL Injection in User Login Form",
+    "owasp_category": "A03:2021 - Injection",
+    "severity": "Critical",
+    "cvss_v3": "9.8",
+    "description": "The user login form is vulnerable to SQL injection attacks. The application concatenates user input directly into SQL queries without proper parameterization or input sanitization. An attacker can bypass authentication or extract sensitive data from the database.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Navigate to the login page at /login"
+      },
+      {
+        "step_number": 2,
+        "text": "Enter ' OR '1'='1 in the username field"
+      },
+      {
+        "step_number": 3,
+        "text": "Enter any password in the password field"
+      },
+      {
+        "step_number": 4,
+        "text": "Click the login button"
+      },
+      {
+        "step_number": 5,
+        "text": "The application logs in without proper validation, bypassing authentication"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-002",
+    "title": "Reflected Cross-Site Scripting (XSS) in Search Function",
+    "owasp_category": "A03:2021 - Injection",
+    "severity": "High",
+    "cvss_v3": "7.1",
+    "description": "The search functionality does not properly encode user input before displaying results. An attacker can inject malicious JavaScript code that will execute in the victim's browser, potentially stealing session cookies, credentials, or performing unauthorized actions.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Navigate to the search page at /search"
+      },
+      {
+        "step_number": 2,
+        "text": "Enter <script>alert('XSS')</script> in the search field"
+      },
+      {
+        "step_number": 3,
+        "text": "Submit the search form"
+      },
+      {
+        "step_number": 4,
+        "text": "JavaScript alert box appears, confirming the vulnerability"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-003",
+    "title": "Weak Password Policy",
+    "owasp_category": "A04:2021 - Insecure Design",
+    "severity": "High",
+    "cvss_v3": "7.5",
+    "description": "The application does not enforce a strong password policy during user registration. Users can set weak passwords consisting of only lowercase letters or a single digit. The minimum length requirement is only 4 characters, making it easy to brute force user accounts.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Navigate to the registration page at /register"
+      },
+      {
+        "step_number": 2,
+        "text": "Attempt to register with password 'abc1'"
+      },
+      {
+        "step_number": 3,
+        "text": "Registration succeeds without enforcing password complexity requirements"
+      },
+      {
+        "step_number": 4,
+        "text": "Try password '1234' - also accepted"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-004",
+    "title": "Sensitive Data Exposure in Source Code Comments",
+    "owasp_category": "A01:2021 - Broken Access Control",
+    "severity": "High",
+    "cvss_v3": "7.3",
+    "description": "The application source code contains hardcoded database credentials and API keys in comments and configuration files. This information is visible in the page source and developer tools, allowing attackers to gain unauthorized access to backend systems.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Open any page in a web browser"
+      },
+      {
+        "step_number": 2,
+        "text": "Right-click and select 'View Page Source'"
+      },
+      {
+        "step_number": 3,
+        "text": "Search for 'password' or 'API_KEY' in the source code"
+      },
+      {
+        "step_number": 4,
+        "text": "Credentials are found in HTML comments (e.g., <!-- DB_USER: admin, DB_PASS: Passw0rd -->"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-005",
+    "title": "Missing HTTP Security Headers",
+    "owasp_category": "A01:2021 - Broken Access Control",
+    "severity": "Medium",
+    "cvss_v3": "5.3",
+    "description": "Critical security headers are not implemented in HTTP responses. The application lacks Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, and Strict-Transport-Security headers, making it vulnerable to various attacks including clickjacking and MIME type sniffing.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Open developer tools (F12) in a web browser"
+      },
+      {
+        "step_number": 2,
+        "text": "Navigate to the Network tab"
+      },
+      {
+        "step_number": 3,
+        "text": "Reload the page and click on the main document request"
+      },
+      {
+        "step_number": 4,
+        "text": "Check the Response Headers tab"
+      },
+      {
+        "step_number": 5,
+        "text": "Observe that Security Headers (CSP, X-Frame-Options, HSTS) are absent"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-006",
+    "title": "Insecure Direct Object References (IDOR)",
+    "owasp_category": "A01:2021 - Broken Access Control",
+    "severity": "High",
+    "cvss_v3": "7.5",
+    "description": "The application allows users to access other users' profiles and private data by modifying object identifiers in the URL. There is no authorization check to verify if the user has permission to view the requested resource. An attacker can enumerate user IDs and access any user's profile.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Log in as a regular user"
+      },
+      {
+        "step_number": 2,
+        "text": "Navigate to your profile at /profile/123"
+      },
+      {
+        "step_number": 3,
+        "text": "Change the URL to /profile/124 (or any other user ID)"
+      },
+      {
+        "step_number": 4,
+        "text": "You can view another user's profile, email, and sensitive information without authorization"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-007",
+    "title": "Cross-Site Request Forgery (CSRF)",
+    "owasp_category": "A03:2021 - Injection",
+    "severity": "Medium",
+    "cvss_v3": "6.5",
+    "description": "The application does not implement CSRF protection mechanisms such as CSRF tokens or SameSite cookies. An attacker can craft a malicious form that performs unwanted actions on behalf of authenticated users, such as changing passwords, transferring funds, or modifying user profiles.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Create an attacker-controlled HTML file with a form targeting the password change endpoint"
+      },
+      {
+        "step_number": 2,
+        "text": "Trick an authenticated user into visiting the attacker's page"
+      },
+      {
+        "step_number": 3,
+        "text": "The form automatically submits a POST request to /change-password with new credentials"
+      },
+      {
+        "step_number": 4,
+        "text": "Since there's no CSRF token validation, the user's password is changed without their knowledge"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-008",
+    "title": "Broken Authentication - Session Fixation",
+    "owasp_category": "A07:2021 - Identification and Authentication Failures",
+    "severity": "High",
+    "cvss_v3": "8.1",
+    "description": "The application does not regenerate session IDs after login. An attacker can obtain a valid session ID before login and use it to impersonate users after they log in. Session tokens are predictable and not properly invalidated on logout.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Capture the session cookie before logging in (using browser tools or proxy)"
+      },
+      {
+        "step_number": 2,
+        "text": "Note the session ID value"
+      },
+      {
+        "step_number": 3,
+        "text": "Log in with legitimate credentials"
+      },
+      {
+        "step_number": 4,
+        "text": "The same session ID remains unchanged, indicating session fixation"
+      },
+      {
+        "step_number": 5,
+        "text": "An attacker can use the captured session ID to access the authenticated user's account"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-009",
+    "title": "Unencrypted Sensitive Data in Transit",
+    "owasp_category": "A02:2021 - Cryptographic Failures",
+    "severity": "Critical",
+    "cvss_v3": "9.1",
+    "description": "The application transmits sensitive information (passwords, API keys, PII) over unencrypted HTTP connections instead of HTTPS. An attacker can intercept network traffic and capture sensitive data. This is particularly critical for login forms and API endpoints.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Use a network proxy tool like Burp Suite or Wireshark"
+      },
+      {
+        "step_number": 2,
+        "text": "Set up the proxy to intercept traffic from your browser"
+      },
+      {
+        "step_number": 3,
+        "text": "Access the application over HTTP (not HTTPS)"
+      },
+      {
+        "step_number": 4,
+        "text": "Log in with a username and password"
+      },
+      {
+        "step_number": 5,
+        "text": "In the proxy, you can see the login credentials in plain text in the HTTP POST request"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-010",
+    "title": "Path Traversal Vulnerability",
+    "owasp_category": "A01:2021 - Broken Access Control",
+    "severity": "High",
+    "cvss_v3": "7.5",
+    "description": "The file download functionality is vulnerable to path traversal attacks. An attacker can use relative path sequences (../) to escape the intended directory and access arbitrary files on the server, including sensitive configuration files and system files.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Navigate to the file download page at /download"
+      },
+      {
+        "step_number": 2,
+        "text": "Attempt to download a file with the filename: ../../../etc/passwd"
+      },
+      {
+        "step_number": 3,
+        "text": "The application returns the /etc/passwd file instead of validating the path"
+      },
+      {
+        "step_number": 4,
+        "text": "Try other paths like ../../config/database.yml to access configuration files"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-011",
+    "title": "Hardcoded Secrets and API Keys",
+    "owasp_category": "A02:2021 - Cryptographic Failures",
+    "severity": "Critical",
+    "cvss_v3": "9.8",
+    "description": "API keys, database passwords, and other secrets are hardcoded in the application configuration and source code. These secrets are visible in version control systems (GitHub, GitLab) and accessible to anyone with code repository access. An attacker can use these credentials to compromise backend systems.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Access the application's source code repository"
+      },
+      {
+        "step_number": 2,
+        "text": "Search for files like .env, config.py, application.properties, etc."
+      },
+      {
+        "step_number": 3,
+        "text": "Find hardcoded credentials like: AWS_SECRET_KEY=AKIAIOSFODNN7EXAMPLE"
+      },
+      {
+        "step_number": 4,
+        "text": "Check git history to find credentials that may have been committed previously"
+      }
+    ],
+    "evidence": []
+  },
+  {
+    "id": "F-2025-012",
+    "title": "Missing Input Validation",
+    "owasp_category": "A03:2021 - Injection",
+    "severity": "Medium",
+    "cvss_v3": "6.5",
+    "description": "The application does not properly validate user input across multiple endpoints. Negative numbers can be submitted where only positive values should be accepted, file upload restrictions are not enforced, and input length limits are missing, allowing for potential DoS attacks or unexpected behavior.",
+    "steps_to_reproduce": [
+      {
+        "step_number": 1,
+        "text": "Submit a quantity field with a negative number (-5) when placing an order"
+      },
+      {
+        "step_number": 2,
+        "text": "The system processes the negative quantity, resulting in unexpected behavior"
+      },
+      {
+        "step_number": 3,
+        "text": "Upload a 1GB file when the API expects images (no file size validation)"
+      },
+      {
+        "step_number": 4,
+        "text": "Submit extremely long strings (>10000 characters) in text fields"
+      }
+    ],
+    "evidence": []
+  }
+]
